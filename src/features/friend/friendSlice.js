@@ -8,6 +8,7 @@ const initialState = {
   currentPageUsers: [],
   usersById: {},
   totalPages: 1,
+  totalUsers: 0, // Add this to keep track of the total number of users
 };
 
 const slice = createSlice({
@@ -46,6 +47,17 @@ const slice = createSlice({
     },
 
     getFriendRequestsSuccess(state, action) {
+      state.isLoading = false;
+      state.error = null;
+
+      const { users, count, totalPages } = action.payload;
+      users.forEach((user) => (state.usersById[user._id] = user));
+      state.currentPageUsers = users.map((user) => user._id);
+      state.totalUsers = count;
+      state.totalPages = totalPages;
+    },
+
+    getOutgoingRequestsSuccess(state, action) {
       state.isLoading = false;
       state.error = null;
 
@@ -97,50 +109,67 @@ export default slice.reducer;
 
 export const getUsers =
   ({ filterName, page = 1, limit = 12 }) =>
-  async (dispatch) => {
-    dispatch(slice.actions.startLoading());
-    try {
-      const params = { page, limit };
-      if (filterName) params.name = filterName;
-      const response = await apiService.get("/users", { params });
-      dispatch(slice.actions.getUsersSuccess(response.data));
-    } catch (error) {
-      dispatch(slice.actions.hasError(error));
-      toast.error(error.message);
-    }
-  };
+    async (dispatch) => {
+      dispatch(slice.actions.startLoading());
+      try {
+        const params = { page, limit };
+        if (filterName) params.name = filterName;
+        const response = await apiService.get("/users", { params });
+        dispatch(slice.actions.getUsersSuccess(response.data));
+      } catch (error) {
+        dispatch(slice.actions.hasError(error));
+        toast.error(error.message);
+      }
+    };
 
 export const getFriends =
   ({ filterName, page = 1, limit = 12 }) =>
-  async (dispatch) => {
-    dispatch(slice.actions.startLoading());
-    try {
-      const params = { page, limit };
-      if (filterName) params.name = filterName;
-      const response = await apiService.get("/friends", { params });
-      dispatch(slice.actions.getFriendsSuccess(response.data));
-    } catch (error) {
-      dispatch(slice.actions.hasError(error.message));
-      toast.error(error.message);
-    }
-  };
+    async (dispatch) => {
+      dispatch(slice.actions.startLoading());
+      try {
+        const params = { page, limit };
+        if (filterName) params.name = filterName;
+        const response = await apiService.get("/friends", { params });
+        dispatch(slice.actions.getFriendsSuccess(response.data));
+      } catch (error) {
+        dispatch(slice.actions.hasError(error.message));
+        toast.error(error.message);
+      }
+    };
 
 export const getFriendRequests =
   ({ filterName, page = 1, limit = 12 }) =>
-  async (dispatch) => {
-    dispatch(slice.actions.startLoading());
-    try {
-      const params = { page, limit };
-      if (filterName) params.name = filterName;
-      const response = await apiService.get("/friends/requests/incoming", {
-        params,
-      });
-      dispatch(slice.actions.getFriendRequestsSuccess(response.data));
-    } catch (error) {
-      dispatch(slice.actions.hasError(error.message));
-      toast.error(error.message);
-    }
-  };
+    async (dispatch) => {
+      dispatch(slice.actions.startLoading());
+      try {
+        const params = { page, limit };
+        if (filterName) params.name = filterName;
+        const response = await apiService.get("/friends/requests/incoming", {
+          params,
+        });
+        dispatch(slice.actions.getFriendRequestsSuccess(response.data));
+      } catch (error) {
+        dispatch(slice.actions.hasError(error.message));
+        toast.error(error.message);
+      }
+    };
+
+export const getOutgoingRequests =
+  ({ filterName, page = 1, limit = 12 }) =>
+    async (dispatch) => {
+      dispatch(slice.actions.startLoading());
+      try {
+        const params = { page, limit };
+        if (filterName) params.name = filterName;
+        const response = await apiService.get("/friends/requests/outgoing", {
+          params,
+        });
+        dispatch(slice.actions.getOutgoingRequestsSuccess(response.data));
+      } catch (error) {
+        dispatch(slice.actions.hasError(error.message));
+        toast.error(error.message);
+      }
+    };
 
 export const sendFriendRequest = (targetUserId) => async (dispatch) => {
   dispatch(slice.actions.startLoading());
