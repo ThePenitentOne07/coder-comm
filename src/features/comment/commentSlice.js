@@ -58,64 +58,64 @@ export default slice.reducer;
 
 export const getComments =
   ({ postId, page = 1, limit = COMMENTS_PER_POST }) =>
-  async (dispatch) => {
-    dispatch(slice.actions.startLoading());
-    try {
-      const params = {
-        page: page,
-        limit: limit,
-      };
-      const response = await apiService.get(`/posts/${postId}/comments`, {
-        params,
-      });
-      dispatch(
-        slice.actions.getCommentsSuccess({
-          ...response.data,
-          postId,
-          page,
-        })
-      );
-    } catch (error) {
-      dispatch(slice.actions.hasError(error.message));
-      toast.error(error.message);
-    }
-  };
+    async (dispatch) => {
+      dispatch(slice.actions.startLoading());
+      try {
+        const params = {
+          page: page,
+          limit: limit,
+        };
+        const response = await apiService.get(`/posts/${postId}/comments`, {
+          params,
+        });
+        dispatch(
+          slice.actions.getCommentsSuccess({
+            ...response.data,
+            postId,
+            page,
+          })
+        );
+      } catch (error) {
+        dispatch(slice.actions.hasError(error.message));
+        toast.error(error.message);
+      }
+    };
 
 export const createComment =
   ({ postId, content }) =>
-  async (dispatch) => {
-    dispatch(slice.actions.startLoading());
-    try {
-      const response = await apiService.post("/comments", {
-        content,
-        postId,
-      });
-      dispatch(slice.actions.createCommentSuccess(response.data));
-      dispatch(getComments({ postId }));
-    } catch (error) {
-      dispatch(slice.actions.hasError(error.message));
-      toast.error(error.message);
-    }
-  };
+    async (dispatch) => {
+      dispatch(slice.actions.startLoading());
+      try {
+        const response = await apiService.post("/comments", {
+          content,
+          postId,
+        });
+        dispatch(slice.actions.createCommentSuccess(response.data));
+        dispatch(getComments({ postId }));
+      } catch (error) {
+        dispatch(slice.actions.hasError(error.message));
+        toast.error(error.message);
+      }
+    };
 
 export const sendCommentReaction =
   ({ commentId, emoji }) =>
-  async (dispatch) => {
-    dispatch(slice.actions.startLoading());
-    try {
-      const response = await apiService.post(`/reactions`, {
-        targetType: "Comment",
-        targetId: commentId,
-        emoji,
-      });
-      dispatch(
-        slice.actions.sendCommentReactionSuccess({
-          commentId,
-          reactions: response.data,
-        })
-      );
-    } catch (error) {
-      dispatch(slice.actions.hasError(error.message));
-      toast.error(error.message);
-    }
-  };
+    async (dispatch) => {
+      dispatch(slice.actions.startLoading());
+      try {
+        const response = await apiService.post(`/reactions`, {
+          targetType: "Comment",
+          targetId: commentId,
+          emoji,
+        });
+        dispatch(
+          slice.actions.sendCommentReactionSuccess({
+            commentId,
+            reactions: response.data,
+          })
+        );
+      } catch (error) {
+        dispatch(slice.actions.hasError(error.message));
+        toast.error(error.message);
+      }
+    };

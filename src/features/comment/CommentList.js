@@ -38,7 +38,7 @@ function CommentList({ postId }) {
     renderComments = (
       <Stack spacing={1.5}>
         {comments.map((comment) => (
-          <CommentCard key={comment._id} comment={comment} />
+          <CommentCard key={comment._id} comment={comment} postId={postId} />
         ))}
       </Stack>
     );
@@ -53,8 +53,8 @@ function CommentList({ postId }) {
           {totalComments > 1
             ? `${totalComments} comments`
             : totalComments === 1
-            ? `${totalComments} comment`
-            : "No comment"}
+              ? `${totalComments} comment`
+              : "No comment"}
         </Typography>
         {totalComments > COMMENTS_PER_POST && (
           <Pagination
